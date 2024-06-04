@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // Init Express
 const app = express();
 
@@ -54,6 +54,13 @@ async function run() {
     // Get All Tests
     app.get("/tests", async (req, res) => {
       const result = await testCollection.find().toArray();
+      res.send(result);
+    });
+    // Get Single Test
+    app.get("/tests/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await testCollection.findOne(query);
       res.send(result);
     });
     // await client.db("admin").command({ ping: 1 });
