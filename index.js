@@ -34,7 +34,22 @@ async function run() {
     // Send a ping to confirm a successful connection
 
     // Create Database and Collection
+    const userCollection = client.db("diagnosticDB").collection("users");
+    const testCollection = client.db("diagnosticDB").collection("tests");
 
+    // Create User
+    app.post("/user", async (req, res) => {
+      const userInfo = req.body;
+      const result = await userCollection.insertOne(userInfo);
+      res.send(result);
+    });
+
+    // Create Test
+    app.post("/tests", async (req, res) => {
+      const testInfo = req.body;
+      const result = await testCollection.insertOne(testInfo);
+      res.send(result);
+    });
     // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
