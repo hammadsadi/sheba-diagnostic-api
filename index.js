@@ -98,6 +98,11 @@ async function run() {
       const result = await bannerCollection.insertOne(bannerInfo);
       res.send(result);
     });
+    // Get All Banners
+    app.get("/banner", async (req, res) => {
+      const result = await bannerCollection.find().toArray();
+      res.send(result);
+    });
 
     // await client.db("admin").command({ ping: 1 });
     console.log(
