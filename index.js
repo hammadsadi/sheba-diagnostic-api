@@ -36,6 +36,7 @@ async function run() {
     // Create Database and Collection
     const userCollection = client.db("diagnosticDB").collection("users");
     const testCollection = client.db("diagnosticDB").collection("tests");
+    const bannerCollection = client.db("diagnosticDB").collection("banners");
 
     // Create User
     app.post("/user", async (req, res) => {
@@ -88,6 +89,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await testCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Create Banner
+    app.post("/banner", async (req, res) => {
+      const bannerInfo = req.body;
+      const result = await bannerCollection.insertOne(bannerInfo);
       res.send(result);
     });
 
