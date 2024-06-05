@@ -104,6 +104,29 @@ async function run() {
       res.send(result);
     });
 
+    // Update Banner Status
+    app.patch("/banner/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const info = req.body;
+
+      const updateDoc = {
+        $set: {
+          isActive: info.status,
+        },
+      };
+      const result = await bannerCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+    // Delete Banner
+    app.delete("/banner/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const result = await bannerCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
