@@ -3,6 +3,7 @@ require("dotenv").config();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // Init Express
 const app = express();
 
@@ -37,6 +38,7 @@ async function run() {
     const userCollection = client.db("diagnosticDB").collection("users");
     const testCollection = client.db("diagnosticDB").collection("tests");
     const bannerCollection = client.db("diagnosticDB").collection("banners");
+    const bookingCollection = client.db("diagnosticDB").collection("bookings");
 
     // Create User
     app.post("/user", async (req, res) => {
@@ -125,6 +127,33 @@ async function run() {
 
       const result = await bannerCollection.deleteOne(query);
       res.send(result);
+    });
+
+    // Booking Related Api
+    app.post("/booking", async (req, res) => {
+      const bookingInfo = req.body;
+
+      // Update Slots
+      await testCollection.updateOne(
+        { _id: new ObjectId(bookingInfo.testId) },
+        { $inc: { slots: -1 } }
+      );
+      const result = await bookingCollection.insertOne(bookingInfo);
+      res.send(result);
+    });
+
+    // Create Payment Intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
     });
 
     // await client.db("admin").command({ ping: 1 });
