@@ -47,6 +47,51 @@ async function run() {
       res.send(result);
     });
 
+    // Get All User
+    app.get("/user", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get Single User
+    app.get("/user/active/:email", async (req, res) => {
+      const email = req.params;
+      const query = { email: email };
+
+      const result = await userCollection.findOne({ email });
+      console.log(result);
+      res.send(result);
+    });
+
+    // Update User Status
+    app.patch("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const { status } = req.body;
+
+      const updateDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await userCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+    // Update User Role
+    app.patch("/user/role/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const { role } = req.body;
+
+      const updateDoc = {
+        $set: {
+          role: role,
+        },
+      };
+      const result = await userCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // Create Test
     app.post("/tests", async (req, res) => {
       const testInfo = req.body;
@@ -91,6 +136,15 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await testCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Get My Listings Data
+    app.get("/myListings/:email", async (req, res) => {
+      const email = req.params.email;
+
+      const filter = { "host.email": email };
+      const result = await roomCollection.find(filter).toArray();
       res.send(result);
     });
 
@@ -139,6 +193,28 @@ async function run() {
         { $inc: { slots: -1 } }
       );
       const result = await bookingCollection.insertOne(bookingInfo);
+      res.send(result);
+    });
+
+    // Get All Bookings
+    app.get("/booking", async (req, res) => {
+      const result = await bookingCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get All Upcoming Bookings
+    app.get("/booking/upcomin/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { "patientInfo.email": email };
+      const result = await bookingCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    // Delete Booking
+    app.delete("/booking/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
       res.send(result);
     });
 
