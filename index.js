@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 const { formatISO } = require("date-fns");
@@ -31,6 +32,36 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+// Send Mail
+const sendEmail = async (userEmail, emailData) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: process.env.APP_EMAIL,
+      pass: process.env.APP_KEY,
+    },
+  });
+
+  const emailBody = {
+    from: `"Sheba Diagnostic Center" <${process.env.APP_EMAIL}>`, // sender address
+    to: userEmail, // list of receivers
+    subject: emailData.subject, // Subject line
+    // plain text body
+    html: emailData.message, // html body
+  };
+
+  transporter.sendMail(emailBody, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("from mailer", info.response);
+    }
+  });
+};
 
 async function run() {
   try {
@@ -178,11 +209,6 @@ async function run() {
       res.send(result);
     });
 
-    // Get All Tests
-    // app.get("/tests", async (req, res) => {
-    //   const result = await testCollection.find().toArray();
-    //   res.send(result);
-    // });
     app.get("/tests", async (req, res) => {
       const result = await testCollection.find().toArray();
       res.send(result);
@@ -302,7 +328,15 @@ async function run() {
       const id = req.params.id;
       const testReport = req.body;
       const query = { _id: new ObjectId(id) };
-
+      // Get Booked User From DB
+      const bookedUser = await bookingCollection.findOne(query);
+      // Send Email
+      if (testReport.status == "Delivered") {
+        sendEmail(bookedUser?.patientInfo?.email, {
+          subject: "Report Delivered Successful",
+          message: `Hello ${bookedUser?.patientInfo?.name} Your Report Delivered Successful`,
+        });
+      }
       const updateDoc = {
         $set: {
           report: testReport.status,
