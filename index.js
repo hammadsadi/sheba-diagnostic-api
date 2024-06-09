@@ -290,6 +290,13 @@ async function run() {
       res.send(result);
     });
 
+    // Get All Delivered Booking Data
+    app.get("/bookings/delivered", async (req, res) => {
+      let query = { report: "Delivered" };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // Update Booking
     app.patch("/booking/status/:id", verifyToken, async (req, res) => {
       const id = req.params.id;
