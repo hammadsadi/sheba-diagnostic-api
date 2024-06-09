@@ -3,6 +3,7 @@ require("dotenv").config();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
+const { formatISO } = require("date-fns");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // Init Express
@@ -12,7 +13,10 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "https://diagnostic-management-312cf.web.app",
+    ],
     credentials: true,
   })
 );
@@ -40,6 +44,9 @@ async function run() {
     const testCollection = client.db("diagnosticDB").collection("tests");
     const bannerCollection = client.db("diagnosticDB").collection("banners");
     const bookingCollection = client.db("diagnosticDB").collection("bookings");
+    const healthRecommendationsCollection = client
+      .db("diagnosticDB")
+      .collection("healthRecommendations");
 
     // Admin Verify
     const adminVerify = async (req, res, next) => {
@@ -111,12 +118,11 @@ async function run() {
     });
 
     // Get Single User
-    app.get("/user/active/:email", async (req, res) => {
-      const email = req.params;
-      const query = { email: email };
+    app.get("/user/current/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const result = await userCollection.findOne(filter);
 
-      const result = await userCollection.findOne({ email });
-      console.log(result);
       res.send(result);
     });
 
@@ -149,6 +155,22 @@ async function run() {
       res.send(result);
     });
 
+    // Update User Status
+    app.put("/user/update/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const userInfo = req.body;
+
+      const updateDoc = {
+        $set: {
+          name: userInfo.name,
+          photo: userInfo.photo,
+        },
+      };
+      const result = await userCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // Create Test
     app.post("/tests", verifyToken, adminVerify, async (req, res) => {
       const testInfo = req.body;
@@ -157,6 +179,10 @@ async function run() {
     });
 
     // Get All Tests
+    // app.get("/tests", async (req, res) => {
+    //   const result = await testCollection.find().toArray();
+    //   res.send(result);
+    // });
     app.get("/tests", async (req, res) => {
       const result = await testCollection.find().toArray();
       res.send(result);
@@ -250,8 +276,24 @@ async function run() {
     });
 
     // Get All Bookings
-    app.get("/booking", verifyToken, async (req, res) => {
+    app.get("/bookings", async (req, res) => {
+      console.log(req.query);
       const result = await bookingCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Update Booking
+    app.patch("/booking/status/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const testReport = req.body;
+      const query = { _id: new ObjectId(id) };
+
+      const updateDoc = {
+        $set: {
+          report: testReport.status,
+        },
+      };
+      const result = await bookingCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
@@ -283,6 +325,12 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // Get All User
+    app.get("/health/recommendation", async (req, res) => {
+      const result = await healthRecommendationsCollection.find().toArray();
+      res.send(result);
     });
 
     // await client.db("admin").command({ ping: 1 });
