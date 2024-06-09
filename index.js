@@ -277,8 +277,16 @@ async function run() {
 
     // Get All Bookings
     app.get("/bookings", async (req, res) => {
-      console.log(req.query);
-      const result = await bookingCollection.find().toArray();
+      const filter = req.query;
+
+      let query = {};
+      if (filter.search) {
+        query = {
+          "patientInfo.email": { $regex: filter?.search, $options: "i" },
+        };
+      }
+
+      const result = await bookingCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -310,6 +318,14 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Get All Reservations
+    app.get("/reservation/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const filter = { testId: id };
+      const result = await bookingCollection.find(filter).toArray();
       res.send(result);
     });
 
