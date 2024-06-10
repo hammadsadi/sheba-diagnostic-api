@@ -75,6 +75,7 @@ async function run() {
     const testCollection = client.db("diagnosticDB").collection("tests");
     const bannerCollection = client.db("diagnosticDB").collection("banners");
     const bookingCollection = client.db("diagnosticDB").collection("bookings");
+    const newsCollection = client.db("diagnosticDB").collection("news");
     const healthRecommendationsCollection = client
       .db("diagnosticDB")
       .collection("healthRecommendations");
@@ -384,9 +385,15 @@ async function run() {
       });
     });
 
-    // Get All User
+    // Get All Health Recommendations
     app.get("/health/recommendation", async (req, res) => {
       const result = await healthRecommendationsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get All News
+    app.get("/news", async (req, res) => {
+      const result = await newsCollection.find().toArray();
       res.send(result);
     });
 
