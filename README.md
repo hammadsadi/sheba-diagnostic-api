@@ -4,22 +4,6 @@
 
 Click here for the Live Site: [https://diagnostic-management-312cf.web.app](https://diagnostic-management-312cf.web.app)
 
-## Admin Info
-
-1. Admin Email
-
-```bash
-sadiahmed580@gmail.com
-
-```
-
-2. Admin Password
-
-```bash
-Sadi12345
-
-```
-
 ## Website Features
 
 - Test / Service Booking System
