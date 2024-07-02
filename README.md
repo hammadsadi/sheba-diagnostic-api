@@ -1,23 +1,61 @@
-# Sheba Diagnostic Center
+# Project Overview
 
-## [ Live Site URL](https://diagnostic-management-312cf.web.app/)
-
-Click here for the Live Site: [https://diagnostic-management-312cf.web.app](https://diagnostic-management-312cf.web.app)
+This is robust Diagnostic Center Management System, a full-stack web
+application that effectively manages appointments, patient records, test
+results, and administrative tasks for a diagnostic center.
 
 ## Website Features
 
 - Test / Service Booking System
-- User Can book If Available booking slots
 - User can apply promo code for Discount
 - User can make payment using stripe. When A User Book a Test / Service
-- Display test data available for the future dates and starting from date of today
-- User can search feature to filter by date
-- Role Based Authentication
-- Protect Route based on Role
-- Admin Can Download Any User Data in PDF file format
-- Admin Can Block Any User
-- Blocked User Cannot Book any Test / Service and he cannot access her Dashboard
-- An admin can change the role of a user
-- Admin Can Change Test Report
-- Admin Can Add Update and Delete Banner, Test and More
-- Admin / User Can Update her profile info
+
+## [ API URL](https://diagnostic-center-api.vercel.app/)
+
+Click here for the API Live URL: [https://diagnostic-center-api.vercel.app/](https://diagnostic-center-api.vercel.app/)
+
+## Usages Technologies
+
+- Node js
+- Express JS
+- MongoDB
+- JWT
+- Nodemailer
+- Stripe
+
+## Project Clone and Run Step
+
+1. At First Clone This Repo
+
+ <img src="https://i.postimg.cc/Xqd9t4FC/sheba1.png" alt="" />
+
+2. Open This Project on Your Favourite Code Editor and Run This Command on the Vs Code terminal
+
+```js
+//comment following commands
+npm install
+```
+
+3. Setup env Variable Database User, Database Password, Access Token, Stripe Secret key for Payment, App ke and App email for Nodemailer Email Send.
+
+```js
+//comment following commands
+DB_USER;
+DB_PASS;
+ACCESS_TOKEN;
+STRIPE_SECRET_KEY;
+APP_KEY;
+APP_EMAIL;
+```
+
+4. Run This Project following on this command
+
+```js
+//comment following commands
+nodemon index.js
+```
+
+```js
+//comment following commands
+npm start
+```
