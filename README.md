@@ -27,7 +27,7 @@ Click here for the API Live URL: [https://diagnostic-center-api.vercel.app/](htt
 
 1. At First Clone This Repo
 
- <img src="https://i.postimg.cc/Xqd9t4FC/sheba1.png" alt="" />
+ <img src="https://i.postimg.cc/1t6H1G1X/sheba-api-1.png" alt="" />
 
 2. Open This Project on Your Favourite Code Editor and Run This Command on the Vs Code terminal
 
